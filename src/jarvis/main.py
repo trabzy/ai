@@ -17,6 +17,18 @@ def main() -> None:
         help="Run in voice mode (requires a microphone and the 'voice' extra)",
     )
     parser.add_argument(
+        "--hud",
+        action="store_true",
+        help="Launch the holographic web HUD in your browser",
+    )
+    parser.add_argument("--host", default="127.0.0.1", help="HUD host to bind (default 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8765, help="HUD port (default 8765)")
+    parser.add_argument("--no-browser", action="store_true", help="Don't open a browser tab for the HUD")
+    parser.add_argument(
+        "--protocol",
+        help="Working protocol for text/voice mode: jarvis, strategist, solver, engineer, ideas, redteam",
+    )
+    parser.add_argument(
         "--once",
         metavar="MESSAGE",
         help="Send a single message and print the reply, then exit (useful for scripting)",
@@ -29,10 +41,17 @@ def main() -> None:
         print(f"Configuration error: {exc}", file=sys.stderr)
         raise SystemExit(1) from exc
 
+    if args.hud:
+        from .server import serve
+
+        serve(config, host=args.host, port=args.port, open_browser=not args.no_browser)
+        return
+
     if args.voice:
         config.voice_enabled = True
 
     jarvis = Jarvis(config)
+    jarvis.protocol = args.protocol
 
     if args.once:
         print(jarvis.handle_message(args.once))
@@ -45,4 +64,12 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    main()
+
+
+def hud() -> None:
+    """Entry point for the ``jarvis-hud`` command."""
+    import sys as _sys
+
+    _sys.argv.insert(1, "--hud")
     main()

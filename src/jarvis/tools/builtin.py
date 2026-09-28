@@ -209,36 +209,3 @@ def get_weather(city: str) -> str:
     temp = data["main"]["temp"]
     feels_like = data["main"]["feels_like"]
     return f"{city}: {description}, {temp}°C (feels like {feels_like}°C)."
-
-
-# ---------------------------------------------------------------------------
-# Web search (DuckDuckGo instant answers, no API key required)
-# ---------------------------------------------------------------------------
-
-
-@registry.register(
-    name="web_search",
-    description="Look up a quick factual answer or summary from the web.",
-    input_schema={
-        "type": "object",
-        "properties": {"query": {"type": "string", "description": "The search query."}},
-        "required": ["query"],
-    },
-)
-def web_search(query: str) -> str:
-    response = requests.get(
-        "https://api.duckduckgo.com/",
-        params={"q": query, "format": "json", "no_html": 1, "skip_disambig": 1},
-        timeout=10,
-    )
-    response.raise_for_status()
-    data = response.json()
-    answer = data.get("AbstractText") or data.get("Answer")
-    if answer:
-        return answer
-    topics = data.get("RelatedTopics") or []
-    for topic in topics:
-        text = topic.get("Text")
-        if text:
-            return text
-    return f"I couldn't find a quick answer for '{query}'."

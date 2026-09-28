@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "jarvis"
-version = "0.1.0"
-description = "A Claude-powered voice/text assistant"
+version = "0.2.0"
+description = "A Claude-powered personal assistant with a holographic HUD"
 requires-python = ">=3.10"
 dependencies = [
-    "anthropic>=0.40.0",
+    "anthropic>=1.0.0",
     "python-dotenv>=1.0.0",
     "requests>=2.31.0",
 ]
@@ -25,6 +25,10 @@ dev = [
 
 [project.scripts]
 jarvis = "jarvis.main:main"
+jarvis-hud = "jarvis.main:hud"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"jarvis.web" = ["*.html", "vendor/*.js"]

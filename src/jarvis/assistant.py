@@ -17,13 +17,14 @@ class Jarvis:
         self.config = config
         self.brain = ClaudeBrain(config, tool_registry.specs(), tool_registry.execute)
         self.messages: list[dict] = []
+        self.protocol: str | None = None
         self.tts = TextToSpeech(enabled=config.voice_enabled)
         self.stt = SpeechToText() if config.voice_enabled else None
         self.wake_word = WakeWordListener(self.stt, config.wake_word) if self.stt else None
 
     def handle_message(self, text: str) -> str:
         self.messages.append({"role": "user", "content": text})
-        reply, self.messages = self.brain.respond(self.messages)
+        reply, self.messages = self.brain.respond(self.messages, self.protocol)
         return reply
 
     def run_text_loop(self) -> None:

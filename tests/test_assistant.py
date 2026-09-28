@@ -10,7 +10,7 @@ def make_jarvis() -> Jarvis:
 def test_handle_message_appends_history_and_returns_reply(monkeypatch):
     jarvis = make_jarvis()
 
-    def fake_respond(messages):
+    def fake_respond(messages, protocol=None):
         updated = messages + [{"role": "assistant", "content": "hi there"}]
         return "hi there", updated
 
